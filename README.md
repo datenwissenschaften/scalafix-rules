@@ -29,7 +29,7 @@ ensuring that your Spark-based data solutions are consistently high-quality.
 To include these rules in your project, add the following dependency to your `build.sbt`:
 
 ```scala
-ThisBuild / scalafixDependencies += "com.datenwissenschaften" %% "scalafix-rules" % "<latest>"
+ThisBuild / scalafixDependencies += "com.datenwissenschaften" %% "scalafix-rules" % "1.0.0"
 ```
 
 After adding the dependency, you can run Scalafix directly in your SBT project with:
