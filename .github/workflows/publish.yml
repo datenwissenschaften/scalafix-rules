@@ -73,9 +73,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sbt-
 
-      - name: Set up sbt
-        run: echo "sbt.version=1.10.2" > ~/.sbt/1.0/global.sbt
-
       - name: Publish to GitHub Packages
         if: steps.check_version.outcome != 'failure'
         env:
