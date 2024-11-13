@@ -7,6 +7,7 @@ inThisBuild(
   List(
     organization := "com.datenwissenschaften",
     version := "1.0.0",
+    versionScheme := Some("semver-spec"),
     autoStartServer := false,
     homepage := Some(url("https://github.com/datenwissenschaften/scalafix-rules")),
     licenses := List(
