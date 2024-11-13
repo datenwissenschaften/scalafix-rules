@@ -1,8 +1,9 @@
 name: Publish to GitHub Packages
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 jobs:
   publish:
@@ -12,11 +13,37 @@ jobs:
       - name: Check out the code
         uses: actions/checkout@v3
 
+      - name: Extract Version
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP 'version := "\K[^\"]+' build.sbt)
+          echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Check if version already exists on GitHub Packages
+        id: check_version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
+        run: |
+          PACKAGE_NAME="scalafix-rules"
+          OWNER="datenwissenschaften"
+          REPO="scalafix-rules"
+          VERSION_FOUND=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions" | \
+            jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
+          
+          if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
+            echo "Version $PACKAGE_VERSION already exists. Exiting."
+            exit 1
+          else
+            echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
+          fi
+
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: '17'
           cache: sbt
 
       - name: Cache SBT dependencies
@@ -36,9 +63,10 @@ jobs:
             ${{ runner.os }}-sbt-
 
       - name: Set up sbt
-        run: echo "sbt.version=1.10.2" > ~/.sbt/1.0/global.sbt
+        run: echo "sbt.version=1.5.5" > ~/.sbt/1.0/global.sbt
 
       - name: Publish to GitHub Packages
+        if: steps.check_version.outcome != 'failure'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: sbt clean publish
