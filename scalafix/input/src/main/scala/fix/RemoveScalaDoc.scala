@@ -1,6 +1,7 @@
 /*
 rule = RemoveScalaDoc
  */
+// format: off
 package fix
 
 /** object scala doc
@@ -22,3 +23,4 @@ object RemoveScalaDoc {
   }
 
 }
+// format: on

@@ -1,3 +1,4 @@
+// format: off
 package fix
 
 object RemoveScalaDoc {
@@ -13,3 +14,4 @@ object RemoveScalaDoc {
   }
 
 }
+// format: on
