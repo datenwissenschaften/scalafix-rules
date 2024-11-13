@@ -8,7 +8,7 @@ import scala.meta.tokens.Token.{Comment, Whitespace}
 
 class RemoveScalaDoc extends SemanticRule("RemoveScalaDoc") {
 
-  override def fix(implicit doc: SemanticDocument): Patch = {
+  override def fix(implicit doc: SemanticDocument): Patch =
     // Collect all tokens and remove ScalaDoc comments and the following whitespace/newline tokens
     doc.tokens.collect {
       case token if token.isInstanceOf[Comment] && token.syntax.startsWith("/**") =>
@@ -38,5 +38,4 @@ class RemoveScalaDoc extends SemanticRule("RemoveScalaDoc") {
         // Combine the patches
         removeCommentPatch + removeFollowingWhitespacePatch
     }.asPatch
-  }
 }
