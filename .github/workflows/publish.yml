@@ -43,7 +43,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '8'
           cache: sbt
 
       - name: Cache SBT dependencies
@@ -63,7 +63,7 @@ jobs:
             ${{ runner.os }}-sbt-
 
       - name: Set up sbt
-        run: echo "sbt.version=1.5.5" > ~/.sbt/1.0/global.sbt
+        run: echo "sbt.version=1.10.2" > ~/.sbt/1.0/global.sbt
 
       - name: Publish to GitHub Packages
         if: steps.check_version.outcome != 'failure'
