@@ -4,7 +4,8 @@ import scalafix.util.Newline
 import scalafix.v1._
 
 import scala.meta._
-import scala.meta.tokens.Token.{Comment, Whitespace}
+import scala.meta.tokens.Token.Comment
+import scala.meta.tokens.Token.Whitespace
 
 class RemoveScalaDoc extends SemanticRule("RemoveScalaDoc") {
 

@@ -1,7 +1,7 @@
 lazy val V = _root_.scalafix.sbt.BuildInfo
 
-lazy val rulesCrossVersions = Seq(V.scala213, V.scala212)
-lazy val scala3Version = "3.5.0"
+lazy val rulesCrossVersions = Seq(V.scala212)
+// lazy val scala3Version = "3.5.0"
 
 inThisBuild(
   List(
@@ -21,7 +21,12 @@ inThisBuild(
       )
     ),
     semanticdbEnabled := true,
-    semanticdbVersion := scalafixSemanticdb.revision
+    semanticdbVersion := scalafixSemanticdb.revision,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "technology.cariad.datascience.sdk",
+    scalacOptions += "-Ywarn-unused",
+    scalacOptions += "-Yrangepos",
+    scalacOptions += "-Xplugin-require:semanticdb"
   )
 )
 
@@ -49,14 +54,16 @@ lazy val input = projectMatrix
     publish / skip := true
   )
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
+  .jvmPlatform(scalaVersions = rulesCrossVersions)
+// .jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
 
 lazy val output = projectMatrix
   .settings(
     publish / skip := true
   )
   .defaultAxes(VirtualAxis.jvm)
-  .jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
+  .jvmPlatform(scalaVersions = rulesCrossVersions)
+//.jvmPlatform(scalaVersions = rulesCrossVersions :+ scala3Version)
 
 lazy val testsAggregate = Project("tests", file("target/testsAggregate"))
   .aggregate(tests.projectRefs: _*)
@@ -85,16 +92,16 @@ lazy val tests = projectMatrix
   .defaultAxes(
     rulesCrossVersions.map(VirtualAxis.scalaABIVersion) :+ VirtualAxis.jvm: _*
   )
-  .jvmPlatform(
-    scalaVersions = Seq(V.scala212),
-    axisValues = Seq(TargetAxis(scala3Version)),
-    settings = Seq()
-  )
-  .jvmPlatform(
-    scalaVersions = Seq(V.scala213),
-    axisValues = Seq(TargetAxis(V.scala213)),
-    settings = Seq()
-  )
+//  .jvmPlatform(
+//    scalaVersions = Seq(V.scala212),
+//    axisValues = Seq(TargetAxis(scala3Version)),
+//    settings = Seq()
+//  )
+//  .jvmPlatform(
+//    scalaVersions = Seq(V.scala213),
+//    axisValues = Seq(TargetAxis(V.scala213)),
+//    settings = Seq()
+//  )
   .jvmPlatform(
     scalaVersions = Seq(V.scala212),
     axisValues = Seq(TargetAxis(V.scala212)),
