@@ -31,7 +31,13 @@ inThisBuild(
     publishTo := {
       Some("GitHub Packages".at(s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"))
     },
-    publishMavenStyle := true
+    publishMavenStyle := true,
+    credentials += Credentials(
+      "GitHub Packages",
+      "maven.pkg.github.com",
+      "datenwissenschaften",
+      sys.env.getOrElse("GITHUB_TOKEN", "")
+    )
   )
 )
 
