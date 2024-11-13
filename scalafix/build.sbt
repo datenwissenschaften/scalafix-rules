@@ -29,7 +29,7 @@ inThisBuild(
     scalacOptions += "-Yrangepos",
     scalacOptions += "-Xplugin-require:semanticdb",
     publishTo := {
-      Some("GitHub Package Registry".at(s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"))
+      Some("GitHub Packages".at(s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"))
     },
     publishMavenStyle := true,
     credentials += Credentials(
