@@ -19,8 +19,8 @@ jobs:
           VERSION=$(grep -oP 'version := "\K[^\"]+' scalafix/build.sbt)
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Check if version already exists on GitHub Packages
-        id: check_version
+      - name: Check if package and version already exist on GitHub Packages
+        id: check_package_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
@@ -29,23 +29,25 @@ jobs:
           OWNER="datenwissenschaften"
           REPO="scalafix-rules"
           
-          # Make the API request and check if it's valid JSON
-          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions")
+          # Check if package exists
+          PACKAGE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/orgs/$OWNER/packages/maven/com.datenwissenschaften/$PACKAGE_NAME")
           
-          # Check if the response is valid JSON
-          if echo "$RESPONSE" | jq empty 2>/dev/null; then
-            VERSION_FOUND=$(echo "$RESPONSE" | jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
-            if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
-              echo "Version $PACKAGE_VERSION already exists. Exiting."
-              exit 1
+          if [ "$PACKAGE_EXISTS" == "404" ]; then
+            echo "Package $PACKAGE_NAME does not exist. This is the first version. Proceeding with publish."
             else
-              echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
+            # Check if specific version exists
+            RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+             "https://api.github.com/orgs/$OWNER/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions")
+                      
+            VERSION_FOUND=$(echo "$RESPONSE" | jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
+          
+            if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
+             echo "Version $PACKAGE_VERSION already exists. Exiting."
+             exit 1
+            else
+             echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
             fi
-          else
-            echo "Error: Received a non-JSON response from GitHub API:"
-            echo "$RESPONSE"
-            exit 1
           fi
 
       - name: Set up Java
