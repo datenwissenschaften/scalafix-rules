@@ -6,7 +6,7 @@ lazy val rulesCrossVersions = Seq(V.scala212)
 inThisBuild(
   List(
     organization := "com.datenwissenschaften",
-    version := "0.0.4-SNAPSHOT",
+    version := "1.0.0",
     autoStartServer := false,
     homepage := Some(url("https://github.com/datenwissenschaften/scalafix-rules")),
     licenses := List(
@@ -109,3 +109,20 @@ lazy val tests = projectMatrix
   )
   .dependsOn(rules)
   .enablePlugins(ScalafixTestkitPlugin)
+
+publishTo := {
+  val githubRepo = s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"
+  if (isSnapshot.value)
+    Some("GitHub Packages".at(githubRepo))
+  else
+    Some("GitHub Packages".at(githubRepo))
+}
+
+credentials += Credentials(
+  "GitHub Package Registry",
+  "maven.pkg.github.com",
+  "datenwissenschaften",
+  sys.env.getOrElse("GITHUB_TOKEN", "")
+)
+
+publishMavenStyle := true

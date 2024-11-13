@@ -1,0 +1,44 @@
+name: Publish to GitHub Packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          cache: sbt
+
+      - name: Cache SBT dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.ivy2/cache
+          key: ${{ runner.os }}-ivy2-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-ivy2-
+
+      - name: Cache SBT artifacts
+        uses: actions/cache@v3
+        with:
+          path: ~/.sbt
+          key: ${{ runner.os }}-sbt-${{ hashFiles('**/build.sbt') }}
+          restore-keys: |
+            ${{ runner.os }}-sbt-
+
+      - name: Set up sbt
+        run: echo "sbt.version=1.10.2" > ~/.sbt/1.0/global.sbt
+
+      - name: Publish to GitHub Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: sbt clean publish
