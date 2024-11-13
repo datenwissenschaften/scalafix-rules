@@ -27,7 +27,11 @@ inThisBuild(
     buildInfoPackage := "technology.cariad.datascience.sdk",
     scalacOptions += "-Ywarn-unused",
     scalacOptions += "-Yrangepos",
-    scalacOptions += "-Xplugin-require:semanticdb"
+    scalacOptions += "-Xplugin-require:semanticdb",
+    publishTo := {
+      Some("GitHub Packages".at(s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"))
+    },
+    publishMavenStyle := true
   )
 )
 
@@ -110,20 +114,3 @@ lazy val tests = projectMatrix
   )
   .dependsOn(rules)
   .enablePlugins(ScalafixTestkitPlugin)
-
-publishTo := {
-  val githubRepo = s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"
-  if (isSnapshot.value)
-    Some("GitHub Packages".at(githubRepo))
-  else
-    Some("GitHub Packages".at(githubRepo))
-}
-
-credentials += Credentials(
-  "GitHub Package Registry",
-  "maven.pkg.github.com",
-  "datenwissenschaften",
-  sys.env.getOrElse("GITHUB_TOKEN", "")
-)
-
-publishMavenStyle := true
