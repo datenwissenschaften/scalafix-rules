@@ -28,15 +28,24 @@ jobs:
           PACKAGE_NAME="scalafix-rules"
           OWNER="datenwissenschaften"
           REPO="scalafix-rules"
-          VERSION_FOUND=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/$OWNER/$REPO/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions" | \
-            jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
           
-          if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
-            echo "Version $PACKAGE_VERSION already exists. Exiting."
-            exit 1
+          # Make the API request and check if it's valid JSON
+          RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$OWNER/$REPO/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions")
+          
+          # Check if the response is valid JSON
+          if echo "$RESPONSE" | jq empty 2>/dev/null; then
+            VERSION_FOUND=$(echo "$RESPONSE" | jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
+            if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
+              echo "Version $PACKAGE_VERSION already exists. Exiting."
+              exit 1
+            else
+              echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
+            fi
           else
-            echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
+            echo "Error: Received a non-JSON response from GitHub API:"
+            echo "$RESPONSE"
+            exit 1
           fi
 
       - name: Set up Java
