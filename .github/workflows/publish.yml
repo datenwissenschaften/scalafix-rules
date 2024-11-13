@@ -16,7 +16,7 @@ jobs:
       - name: Extract Version
         id: extract_version
         run: |
-          VERSION=$(grep -oP 'version := "\K[^\"]+' build.sbt)
+          VERSION=$(grep -oP 'version := "\K[^\"]+' scalafix/build.sbt)
           echo "PACKAGE_VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Check if version already exists on GitHub Packages
@@ -69,4 +69,6 @@ jobs:
         if: steps.check_version.outcome != 'failure'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: sbt clean publish
+        run: |
+          cd /scalafix
+          sbt clean publish
