@@ -78,5 +78,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd /scalafix
+          cd scalafix
           sbt clean publish
