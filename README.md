@@ -44,7 +44,8 @@ Each rule can be enabled or disabled in the `.scalafix.conf` file. Here’s a sa
 
 ```hocon
 rules = [
-  "RemoveScalaDoc"
+  "RemoveScalaDoc",
+  "SingleLineNestedExpressions"
 ]
 ```
 

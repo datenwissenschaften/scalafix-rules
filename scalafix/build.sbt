@@ -6,7 +6,7 @@ lazy val rulesCrossVersions = Seq(V.scala212)
 inThisBuild(
   List(
     organization := "com.datenwissenschaften",
-    version := "1.0.0",
+    version := "1.1.0",
     versionScheme := Some("semver-spec"),
     autoStartServer := false,
     homepage := Some(url("https://github.com/datenwissenschaften/scalafix-rules")),
