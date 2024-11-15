@@ -46,10 +46,11 @@ jobs:
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
         run: |
           BASE_URL="https://nexus.datenwissenschaften.com/repository/maven-releases"
-          RESPONSE=$(curl -u $NEXUS_USER:$NEXUS_PASSWORD -s -o /dev/null -w "%{http_code}" \
-          "$BASE_URL/com/datenwissenschaften/scalafix-rules_2.13/$PACKAGE_VERSION/")
+          ARTIFACT_PATH="com/datenwissenschaften/scalafix-rules_2.13/$PACKAGE_VERSION/scalafix-rules_2.13-$PACKAGE_VERSION.pom"
+          RESPONSE=$(curl -u $NEXUS_USER:$NEXUS_PASSWORD -s -o /tmp/nexus_response -w "%{http_code}" "$BASE_URL/$ARTIFACT_PATH")
           
-          if [ "$RESPONSE" == "200" ]; then
+          echo "HTTP Response: $RESPONSE"
+          if [[ "$RESPONSE" == "200" && -s /tmp/nexus_response ]]; then
             echo "Version $PACKAGE_VERSION already exists. Exiting."
             exit 1
           else
