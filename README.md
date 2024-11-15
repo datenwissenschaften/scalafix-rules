@@ -29,7 +29,7 @@ To include these rules in your project, add the following dependency to your `bu
 
 ```scala
 resolvers += "Nexus Maven Releases" at "https://nexus.datenwissenschaften.com/repository/maven-releases/"
-ThisBuild / scalafixDependencies += "com.datenwissenschaften" %% "scalafix-rules" % "1.1.1"
+ThisBuild / scalafixDependencies += "com.datenwissenschaften" %% "scalafix-rules" % "1.1.2"
 ```
 
 After adding the dependency, you can run Scalafix directly in your SBT project with:
