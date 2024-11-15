@@ -80,6 +80,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sbt-
 
+      - name: Write Nexus Credentials
+        run: |
+          echo 'credentials += Credentials("Sonatype Nexus Repository Manager", "nexus.datenwissenschaften.com", "${{ secrets.NEXUS_USER }}", "${{ secrets.NEXUS_PASSWORD }}")' > ~/.sbt/1.0/credentials.sbt
+          chmod 600 ~/.sbt/1.0/credentials.sbt
+
       - name: Publish to Nexus
         if: steps.check_package_version.outcome != 'failure'
         env:
@@ -87,8 +92,4 @@ jobs:
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
           cd scalafix
-          echo "realm=Sonatype Nexus Repository Manager" > ~/.sbt/1.0/credentials.sbt
-          echo "host=nexus.datenwissenschaften.com" >> ~/.sbt/1.0/credentials.sbt
-          echo "user=$NEXUS_USER" >> ~/.sbt/1.0/credentials.sbt
-          echo "password=$NEXUS_PASSWORD" >> ~/.sbt/1.0/credentials.sbt
           sbt clean publish
