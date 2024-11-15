@@ -21,7 +21,6 @@ ensuring that your Spark-based data solutions are consistently high-quality.
 ### Prerequisites
 
 - **Scala** 2.12
-- **Spark** 3.x
 - **Scalafix** 0.9.0 or higher
 
 ### Installation
@@ -29,6 +28,7 @@ ensuring that your Spark-based data solutions are consistently high-quality.
 To include these rules in your project, add the following dependency to your `build.sbt`:
 
 ```scala
+resolvers += "Nexus Maven Releases" at "https://nexus.datenwissenschaften.com/repository/maven-releases/"
 ThisBuild / scalafixDependencies += "com.datenwissenschaften" %% "scalafix-rules" % "1.1.1"
 ```
 
@@ -53,7 +53,7 @@ Refer to the [docs](docs/RULES.md) for a full list of available rules and config
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you have ideas for new rules or improvements, feel free to submit a pull request. Before contributing, please review the [contributing guidelines](CONTRIBUTING.md).
+Contributions are welcome! If you have improvements or additional features in mind, please feel free to open a pull request.
 
 ## 📜 License
 
@@ -61,4 +61,4 @@ This project is licensed under the Apache License 2.0. For more information, see
 
 ---
 
-✨ Happy coding with Spark Scala, and let these rules help streamline your data analytics workflow! 🚀
+✨ Keep your Scala code clean, consistent, and up-to-date with **datenwissenschaften/scalafix-rules**! 🚀

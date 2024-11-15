@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: Publish to Nexus Repository
 
 on:
   push:
@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   publish:
@@ -39,35 +38,22 @@ jobs:
           git commit -m "Update README.md with latest version $PACKAGE_VERSION"
           git push
 
-      - name: Check if package and version already exist on GitHub Packages
+      - name: Check if package and version already exist on Nexus
         id: check_package_version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
           PACKAGE_VERSION: ${{ env.PACKAGE_VERSION }}
         run: |
-          PACKAGE_NAME="scalafix-rules"
-          OWNER="datenwissenschaften"
-          REPO="scalafix-rules"
+          BASE_URL="https://nexus.datenwissenschaften.com/repository/maven-releases"
+          RESPONSE=$(curl -u $NEXUS_USER:$NEXUS_PASSWORD -s -o /dev/null -w "%{http_code}" \
+          "$BASE_URL/com/datenwissenschaften/scalafix-rules_2.13/$PACKAGE_VERSION/")
           
-          # Check if package exists
-          PACKAGE_EXISTS=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/orgs/$OWNER/packages/maven/com.datenwissenschaften/$PACKAGE_NAME")
-          
-          if [ "$PACKAGE_EXISTS" == "404" ]; then
-            echo "Package $PACKAGE_NAME does not exist. This is the first version. Proceeding with publish."
+          if [ "$RESPONSE" == "200" ]; then
+            echo "Version $PACKAGE_VERSION already exists. Exiting."
+            exit 1
           else
-            # Check if specific version exists
-            RESPONSE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-             "https://api.github.com/orgs/$OWNER/packages/maven/com.datenwissenschaften/$PACKAGE_NAME/versions")
-          
-            VERSION_FOUND=$(echo "$RESPONSE" | jq -r ".[] | select(.name==\"$PACKAGE_VERSION\") | .name")
-          
-            if [ "$VERSION_FOUND" == "$PACKAGE_VERSION" ]; then
-             echo "Version $PACKAGE_VERSION already exists. Exiting."
-             exit 1
-            else
-             echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
-            fi
+            echo "Version $PACKAGE_VERSION is not published yet. Continuing..."
           fi
 
       - name: Set up Java
@@ -93,10 +79,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-sbt-
 
-      - name: Publish to GitHub Packages
+      - name: Publish to Nexus
         if: steps.check_package_version.outcome != 'failure'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
         run: |
           cd scalafix
+          echo "realm=Sonatype Nexus Repository Manager" > ~/.sbt/1.0/credentials.sbt
+          echo "host=nexus.datenwissenschaften.com" >> ~/.sbt/1.0/credentials.sbt
+          echo "user=$NEXUS_USER" >> ~/.sbt/1.0/credentials.sbt
+          echo "password=$NEXUS_PASSWORD" >> ~/.sbt/1.0/credentials.sbt
           sbt clean publish

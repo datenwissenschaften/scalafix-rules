@@ -218,9 +218,10 @@ $RECYCLE.BIN/
 # Spark Test Files
 *.crc
 _SUCCESS
-trace-analyse-warehouse
-spark-warehouse
 
 .metals/
 .vscode/
 .bloop/
+
+# Credentials
+credentials.properties

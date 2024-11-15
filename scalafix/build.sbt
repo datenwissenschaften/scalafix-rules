@@ -6,7 +6,7 @@ lazy val rulesCrossVersions = Seq(V.scala212)
 inThisBuild(
   List(
     organization := "com.datenwissenschaften",
-    version := "1.1.1",
+    version := "1.1.2",
     versionScheme := Some("semver-spec"),
     autoStartServer := false,
     homepage := Some(url("https://github.com/datenwissenschaften/scalafix-rules")),
@@ -29,15 +29,13 @@ inThisBuild(
     scalacOptions += "-Yrangepos",
     scalacOptions += "-Xplugin-require:semanticdb",
     publishTo := {
-      Some("GitHub Packages".at(s"https://maven.pkg.github.com/datenwissenschaften/scalafix-rules"))
+      val nexus = "https://nexus.datenwissenschaften.com/repository/"
+      if (version.value.endsWith("SNAPSHOT"))
+        Some("Snapshots".at(nexus + "maven-snapshots/"))
+      else
+        Some("Releases".at(nexus + "maven-releases/"))
     },
-    publishMavenStyle := true,
-    credentials += Credentials(
-      "GitHub Package Registry",
-      "maven.pkg.github.com",
-      "datenwissenschaften",
-      sys.env.getOrElse("GITHUB_TOKEN", "")
-    )
+    publishMavenStyle := true
   )
 )
 
